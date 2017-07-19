@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "block_breaker", "block_breaker\block_breaker.vcxproj", "{244DD3A3-96BF-46DE-BA83-C60EA7AEF856}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{244DD3A3-96BF-46DE-BA83-C60EA7AEF856}.Debug|Win32.ActiveCfg = Debug|Win32
+		{244DD3A3-96BF-46DE-BA83-C60EA7AEF856}.Debug|Win32.Build.0 = Debug|Win32
+		{244DD3A3-96BF-46DE-BA83-C60EA7AEF856}.Release|Win32.ActiveCfg = Release|Win32
+		{244DD3A3-96BF-46DE-BA83-C60EA7AEF856}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
