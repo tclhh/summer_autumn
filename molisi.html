@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<canvas id="myCanvas" width="288" height="288" style="border:2px solid #c3c3c3;">
+</canvas>
+
+<script type="text/javascript">
+    var flagturn =0;
+    var wcount = 0;
+    var bcount = 0;
+    var round = 1;
+    var radius = 15;
+    var space = 10;
+    var mode = 1;
+    var pre;
+    var cboard = new Array(new Array(17,17,-1),new Array(152,17,-1),new Array(288,17,-1),new Array(62,62,-1),
+        new Array(152,62,-1),new Array(242,62,-1),new Array(107,107,-1),new Array(152,107,-1),new Array(197,107,-1),
+        new Array(17,152,-1),new Array(62,152,-1),new Array(107,152,-1),new Array(197,152,-1), new Array(242,152,-1),
+        new Array(287,152,-1),new Array(107,197,-1),new Array(152,197,-1), new Array(197,197,-1),new Array(62,242,-1),
+        new Array(152,242,-1),new Array(242,242,-1), new Array(17,287,-1),new Array(152,287,-1),new Array(287,287,-1));
+    document.getElementById("myCanvas").onclick = function(event) {
+        Ev = event || window.event;
+        var mousePos = mouseCoords(event);
+        var num = -1;
+        for (var i = 0; i < 24; i++) {
+            if ((mousePos.x - cboard[i][0]) * (mousePos.x - cboard[i][0]) + (mousePos.y - cboard[i][1])
+                * (mousePos.y - cboard[i][1]) <= radius * radius)
+                num = i;
+        }
+        if (num >= 0) {
+            if (mode === 1 && round <= 18) {
+                if (flagturn === 0 ) {
+                    if(cboard[num][2] === -1) {
+                        whiteDown(num);
+                        paintAll();
+                        tellWchess(num);
+                        round++;
+                    }
+                }
+                else if (flagturn === 1) {
+                    if (cboard[num][2] === -1) {
+                        blackDown(num);
+                        paintAll();
+                        tellBchess(num);
+                        round++;
+                    }
+                }
+                if (round > 18)
+                    mode = 4;
+            }
+            else if (mode === 2) {
+                if (flagturn === 0) {
+                    if(cboard[num][2] === 0)
+                    {
+                        pre = num;
+
+                    }
+                    else if(cboard[num][2] === -1){
+                        whiteMove(pre, num);
+                        paintAll();
+                        tellWchess(num);
+                        round++;
+                    }
+                }
+                else if (flagturn === 1) {
+                    if(cboard[num][2] === 1)
+                    {
+                        pre = num;
+                        select(pre);
+                    }
+                    else if(cboard[num][2] === -1){
+                        blackMove(pre, num);
+                        paintAll();
+                        tellBchess(num);
+                        round++;
+                    }
+                }
+            }
+
+            else if (mode === 3) {
+                if (flagturn === 1) {
+                    if (cboard[num][2] !== 1)
+                        alert("Please remove black chess correctly!");
+                    else if (cboard[num][2] === 1) {
+                        cboard[num][2] = -1;
+                        bcount--;
+                        paintAll();
+                        if (round <= 18)
+                            mode = 1;
+                        else {
+                            gameOver();
+                            mode = 4;
+                        }
+                    }
+                }
+                else if (flagturn === 0) {
+                    if (cboard[num][2] !== 0)
+                        alert("Please remove white chess correctly!");
+                    else if (cboard[num][2] === 0) {
+                        cboard[num][2] = -1;
+                        wcount--;
+                        paintAll();
+                        if (round <= 18)
+                            mode = 1;
+                        else {
+                            mode = 4;
+                            gameOver();
+                        }
+                    }
+                }
+            }
+            else if (mode === 4) {
+                if (flagturn === 0) {
+                    if (cboard[num][2] !== 0)
+                        alert(cboard[num][2] + "Please select white chess correctly!");
+                    else if (cboard[num][2] === 0) {
+                        pre = num;
+                        mode = 2;
+                    }
+                }
+                if (flagturn === 1) {
+                    if (cboard[num][2] !== 1)
+                        alert("Please select black chess correctly!");
+                    else if (cboard[num][2] === 1) {
+                        pre = num;
+                        mode = 2;
+                    }
+                }
+            }
+        }
+    }
+
+    function mouseCoords(ev)
+    {
+        if(ev.pageX || ev.pageY){
+            return {x:ev.pageX, y:ev.pageY};
+        }
+        return{
+            x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+            y:ev.clientY + document.body.scrollTop - document.body.clientTop
+        };
+    }
+    document.onmousemove = mouseMove;
+
+
+    var obj=document.getElementById("myCanvas");
+    document.write(obj.getBoundingClientRect().left + "<br>");
+    document.write(obj.getBoundingClientRect().right + "<br>");
+    document.write(obj.getBoundingClientRect().top + "<br>");
+    document.write(obj.getBoundingClientRect().bottom + "<br>");
+
+
+    function whiteDown(turn)
+    {
+        if (turn !== -1)
+        {
+            if (cboard[turn][2] !== -1)
+                alert("you can't do it!");
+            else {
+                cboard[turn][2] = 0;
+                flagturn = 1;
+                wcount++;
+            }
+        }
+    }
+    function blackDown(turn)
+    {
+        if (turn !== -1)
+        {
+            if(cboard[turn][2] !== -1)
+                alert("you can't do it!");
+            else
+            {
+                cboard[turn][2] = 1;
+                flagturn = 0;
+                bcount++;
+            }
+        }
+    }
+
+
+    function IsWMove() {
+        if (flagturn === 0) {
+            for (var n = 0; n < cboard.length; n++) {
+                if (cboard[n][2] === 0) {
+                    if (n === 0 && (cboard[1][2] === -1 || cboard[9][2] === -1))
+                        return true;
+                    else if (n === 1 && (cboard[0][2] === -1 || cboard[2][2] === -1 || cboard[4][2] === -1))
+                        return true;
+                    else if (n === 2 && (cboard[1][2] === -1 || cboard[14][2] === -1))
+                        return true;
+                    else if (n === 3 && (cboard[4][2] === -1 || cboard[10][2] === -1))
+                        return true;
+                    else if (n === 4 && (cboard[1][2] === -1 || cboard[3][2] === -1 || cboard[5][2] === -1 || cboard[7][2] === -1))
+                        return true;
+                    else if (n === 5 && (cboard[4][2] === -1 || cboard[13][2] === -1))
+                        return true;
+                    else if (n === 6 && (cboard[7][2] === -1 || cboard[11][2] === -1))
+                        return true;
+                    else if (n === 7 && (cboard[4][2] === -1 || cboard[6][2] === -1 || cboard[8][2] === -1))
+                        return true;
+                    else if (n === 8 && (cboard[7][2] === -1 || cboard[12][2] === -1 ))
+                        return true;
+                    else if (n === 9 && (cboard[0][2] === -1 || cboard[10][2] === -1 || cboard[21][2] === -1))
+                        return true;
+                    else if (n === 10 && (cboard[3][2] === -1 || cboard[9][2] === -1 || cboard[11][2] === -1 || cboard[18][2] === -1))
+                        return true;
+                    else if (n === 11 && (cboard[6][2] === -1 || cboard[10][2] === -1 || cboard[15][2] === -1))
+                        return true;
+                    else if (n === 12 && (cboard[8][2] === -1 || cboard[13][2] === -1 || cboard[17][2] === -1))
+                        return true;
+                    else if (n === 13 && (cboard[5][2] === -1 || cboard[12][2] === -1 || cboard[14][2] === -1 || cboard[20][2] === -1))
+                        return true;
+                    else if (n === 14 && (cboard[2][2] === -1 || cboard[13][2] === -1 || cboard[23][2] === -1))
+                        return true;
+                    else if (n === 15 && (cboard[11][2] === -1 || cboard[16][2] === -1 ))
+                        return true;
+                    else if (n === 16 && (cboard[15][2] === -1 || cboard[17][2] === -1 || cboard[19][2] === -1))
+                        return true;
+                    else if (n === 17 && (cboard[12][2] === -1 || cboard[16][2] === -1 ))
+                        return true;
+                    else if (n === 18 && (cboard[10][2] === -1 || cboard[19][2] === -1 ))
+                        return true;
+                    else if (n === 19 && (cboard[16][2] === -1 || cboard[18][2] === -1 || cboard[20][2] === -1 || cboard[22][2] === -1))
+                        return true;
+                    else if (n === 20 && (cboard[13][2] === -1 || cboard[19][2] === -1 ))
+                        return true;
+                    else if (n === 21 && (cboard[9][2] === -1 || cboard[22][2] === -1))
+                        return true;
+                    else if (n === 22 && (cboard[19][2] === -1 || cboard[21][2] === -1 || cboard[23][2] === -1))
+                        return true;
+                    else if (n === 23 && (cboard[14][2] === -1 || cboard[22][2] === -1 ))
+                        return true;
+                }
+            }
+            return false;
+        }
+    }
+    function IsBMove() {
+        if (flagturn === 1) {
+            for (var n = 0; n < cboard.length; n++) {
+                if (cboard[n][2] === 1) {
+                    if (n === 0 && (cboard[1][2] === -1 || cboard[9][2] === -1))
+                        return true;
+                    else if (n === 1 && (cboard[0][2] === -1 || cboard[2][2] === -1 || cboard[4][2] === -1))
+                        return true;
+                    else if (n === 2 && (cboard[1][2] === -1 || cboard[14][2] === -1))
+                        return true;
+                    else if (n === 3 && (cboard[4][2] === -1 || cboard[10][2] === -1))
+                        return true;
+                    else if (n === 4 && (cboard[1][2] === -1 || cboard[3][2] === -1 || cboard[5][2] === -1 || cboard[7][2] === -1))
+                        return true;
+                    else if (n === 5 && (cboard[4][2] === -1 || cboard[13][2] === -1))
+                        return true;
+                    else if (n === 6 && (cboard[7][2] === -1 || cboard[11][2] === -1))
+                        return true;
+                    else if (n === 7 && (cboard[4][2] === -1 || cboard[6][2] === -1 || cboard[8][2] === -1))
+                        return true;
+                    else if (n === 8 && (cboard[7][2] === -1 || cboard[12][2] === -1 ))
+                        return true;
+                    else if (n === 9 && (cboard[0][2] === -1 || cboard[10][2] === -1 || cboard[21][2] === -1))
+                        return true;
+                    else if (n === 10 && (cboard[3][2] === -1 || cboard[9][2] === -1 || cboard[11][2] === -1 || cboard[18][2] === -1))
+                        return true;
+                    else if (n === 11 && (cboard[6][2] === -1 || cboard[10][2] === -1 || cboard[15][2] === -1))
+                        return true;
+                    else if (n === 12 && (cboard[8][2] === -1 || cboard[13][2] === -1 || cboard[17][2] === -1))
+                        return true;
+                    else if (n === 13 && (cboard[5][2] === -1 || cboard[12][2] === -1 || cboard[14][2] === -1 || cboard[20][2] === -1))
+                        return true;
+                    else if (n === 14 && (cboard[2][2] === -1 || cboard[13][2] === -1 || cboard[23][2] === -1))
+                        return true;
+                    else if (n === 15 && (cboard[11][2] === -1 || cboard[16][2] === -1 ))
+                        return true;
+                    else if (n === 16 && (cboard[15][2] === -1 || cboard[17][2] === -1 || cboard[19][2] === -1))
+                        return true;
+                    else if (n === 17 && (cboard[12][2] === -1 || cboard[16][2] === -1 ))
+                        return true;
+                    else if (n === 18 && (cboard[10][2] === -1 || cboard[19][2] === -1 ))
+                        return true;
+                    else if (n === 19 && (cboard[16][2] === -1 || cboard[18][2] === -1 || cboard[20][2] === -1 || cboard[22][2] === -1))
+                        return true;
+                    else if (n === 20 && (cboard[13][2] === -1 || cboard[19][2] === -1 ))
+                        return true;
+                    else if (n === 21 && (cboard[9][2] === -1 || cboard[22][2] === -1))
+                        return true;
+                    else if (n === 22 && (cboard[19][2] === -1 || cboard[21][2] === -1 || cboard[23][2] === -1))
+                        return true;
+                    else if (n === 23 && (cboard[14][2] === -1 || cboard[22][2] === -1 ))
+                        return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    function whiteMove(position, turn)
+    {
+        if (cboard[position][2] !== 0)
+            alert("Please select white chessman correctly!");
+        else {
+            if (((position === 0) && (turn === 1 || turn === 9) ||
+                (position === 1) && (turn === 0 || turn === 2 || turn === 4) ||
+                (position === 2) && (turn === 1 || turn === 14) ||
+                (position === 3) && (turn === 4 || turn === 10) ||
+                (position === 4) && (turn === 1 || turn === 3 || turn === 5 || turn === 7) ||
+                (position === 5) && (turn === 4 || turn === 13) ||
+                (position === 6) && (turn === 7 || turn === 11) ||
+                (position === 7) && (turn === 4 || turn === 6 || turn === 8) ||
+                (position === 8) && (turn === 7 || turn === 12) ||
+                (position === 9) && (turn === 0 || turn === 10 || turn === 21) ||
+                (position === 10) && (turn === 3 || turn === 9 || turn === 11 || turn === 18) ||
+                (position === 11) && (turn === 6 || turn === 10 || turn === 15) ||
+                (position === 12) && (turn === 8 || turn === 13 || turn === 17) ||
+                (position === 13) && (turn === 12 || turn === 14 || turn === 5 || turn === 20) ||
+                (position === 14) && (turn === 2 || turn === 13 || turn === 23) ||
+                (position === 15) && (turn === 11 || turn === 16) ||
+                (position === 16) && (turn === 15 || turn === 17 || turn === 19) ||
+                (position === 17) && (turn === 12 || turn === 16) ||
+                (position === 18) && (turn === 10 || turn === 19) ||
+                (position === 19) && (turn === 16 || turn === 18 || turn === 20 || turn === 22) ||
+                (position === 20) && (turn === 13 || turn === 19) ||
+                (position === 21) && (turn === 9 || turn === 22) ||
+                (position === 22) && (turn === 19 || turn === 21 || turn === 23) ||
+                (position === 23) && (turn === 14 || turn === 22)) && cboard[turn][2] === -1)
+            {
+                cboard[turn][2] = 0;
+                cboard[position][2] = -1;
+                flagturn = 1;
+                mode = 4;
+            }
+            else
+            {
+                alert("Please move white chess correctly!")
+            }
+        }
+    }
+
+    function blackMove(position, turn) {
+        if (cboard[position][2] !== 1)
+            alert("Please select black chessman correctly!");
+        else {
+            if (((position === 0) && (turn === 1 || turn === 9) ||
+                (position === 1) && (turn === 0 || turn === 2 || turn === 4) ||
+                (position === 2) && (turn === 1 || turn === 14) ||
+                (position === 3) && (turn === 4 || turn === 10) ||
+                (position === 4) && (turn === 1 || turn === 3 || turn === 5 || turn === 7) ||
+                (position === 5) && (turn === 4 || turn === 13) ||
+                (position === 6) && (turn === 7 || turn === 11) ||
+                (position === 7) && (turn === 4 || turn === 6 || turn === 8) ||
+                (position === 8) && (turn === 7 || turn === 12) ||
+                (position === 9) && (turn === 0 || turn === 10 || turn === 21) ||
+                (position === 10) && (turn === 3 || turn === 9 || turn === 11 || turn === 18) ||
+                (position === 11) && (turn === 6 || turn === 10 || turn === 15) ||
+                (position === 12) && (turn === 8 || turn === 13 || turn === 17) ||
+                (position === 13) && (turn === 12 || turn === 14) ||
+                (position === 14) && (turn === 2 || turn === 13 || turn === 23) ||
+                (position === 15) && (turn === 11 || turn === 16) ||
+                (position === 16) && (turn === 15 || turn === 17 || turn === 19) ||
+                (position === 17) && (turn === 12 || turn === 16) ||
+                (position === 18) && (turn === 10 || turn === 19) ||
+                (position === 19) && (turn === 16 || turn === 18 || turn === 20 || turn === 22) ||
+                (position === 20) && (turn === 13 || turn === 19) ||
+                (position === 21) && (turn === 9 || turn === 22) ||
+                (position === 22) && (turn === 19 || turn === 21 || turn === 23) ||
+                (position === 23) && (turn === 14 || turn === 22)) && cboard[turn][2] === -1 )
+            {
+                cboard[turn][2] = 1;
+                cboard[position][2] = -1;
+                flagturn = 0;
+                mode = 4;
+            }
+            else
+            {
+                alert("Please move black chess correctly!")
+            }
+        }
+    }
+
+
+    function tellBchess(turn) {
+        if (turn === 0) {
+            if ((cboard[0][2] === 1 && cboard[1][2] === 1 && cboard[2][2] === 1) ||
+                (cboard[0][2] === 1 && cboard[9][2] === 1 && cboard[21][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 1) {
+            if ((cboard[1][2] === 1 && cboard[4][2] === 1 && cboard[7][2] === 1) ||
+                (cboard[0][2] === 1 && cboard[1][2] === 1 && cboard[2][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 2) {
+            if ((cboard[0][2] === 1 && cboard[1][2] === 1 && cboard[2][2] === 1) ||
+                (cboard[2][2] === 1 && cboard[14][2] === 1 && cboard[23][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 3) {
+            if ((cboard[3][2] === 1 && cboard[4][2] === 1 && cboard[5][2] === 1) ||
+                (cboard[3][2] === 1 && cboard[10][2] === 1 && cboard[18][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 4) {
+            if ((cboard[3][2] === 1 && cboard[4][2] === 1 && cboard[5][2] === 1) ||
+                (cboard[4][2] === 1 && cboard[1][2] === 1 && cboard[7][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 5) {
+            if ((cboard[3][2] === 1 && cboard[4][2] === 1 && cboard[5][2] === 1) ||
+                (cboard[5][2] === 1 && cboard[13][2] === 1 && cboard[20][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 6) {
+            if ((cboard[6][2] === 1 && cboard[7][2] === 1 && cboard[8][2] === 1) ||
+                (cboard[6][2] === 1 && cboard[11][2] === 1 && cboard[15][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 7) {
+            if ((cboard[6][2] === 1 && cboard[7][2] === 1 && cboard[8][2] === 1) ||
+                (cboard[1][2] === 1 && cboard[4][2] === 1 && cboard[7][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 8) {
+            if ((cboard[6][2] === 1 && cboard[7][2] === 1 && cboard[8][2] === 1) ||
+                (cboard[17][2] === 1 && cboard[12][2] === 1 && cboard[8][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 9) {
+            if ((cboard[9][2] === 1 && cboard[10][2] === 1 && cboard[11][2] === 1) ||
+                (cboard[0][2] === 1 && cboard[9][2] === 1 && cboard[21][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 10) {
+            if ((cboard[9][2] === 1 && cboard[10][2] === 1 && cboard[11][2] === 1) ||
+                (cboard[3][2] === 1 && cboard[10][2] === 1 && cboard[18][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 11) {
+            if ((cboard[9][2] === 1 && cboard[10][2] === 1 && cboard[11][2] === 1) ||
+                (cboard[6][2] === 1 && cboard[11][2] === 1 && cboard[15][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 12) {
+            if ((cboard[12][2] === 1 && cboard[13][2] === 1 && cboard[14][2] === 1) ||
+                (cboard[8][2] === 1 && cboard[12][2] === 1 && cboard[17][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 13) {
+            if ((cboard[5][2] === 1 && cboard[13][2] === 1 && cboard[20][2] === 1) ||
+                (cboard[12][2] === 1 && cboard[13][2] === 1 && cboard[14][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 14) {
+            if ((cboard[12][2] === 1 && cboard[13][2] === 1 && cboard[14][2] === 1) ||
+                (cboard[2][2] === 1 && cboard[14][2] === 1 && cboard[23][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 15) {
+            if ((cboard[15][2] === 1 && cboard[16][2] === 1 && cboard[17][2] === 1) ||
+                (cboard[6][2] === 1 && cboard[11][2] === 1 && cboard[15][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 16) {
+            if ((cboard[15][2] === 1 && cboard[16][2] === 1 && cboard[17][2] === 1) ||
+                (cboard[16][2] === 1 && cboard[19][2] === 1 && cboard[22][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 17) {
+            if ((cboard[15][2] === 1 && cboard[16][2] === 1 && cboard[17][2] === 1) ||
+                (cboard[8][2] === 1 && cboard[12][2] === 1 && cboard[17][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 18) {
+            if ((cboard[18][2] === 1 && cboard[19][2] === 1 && cboard[20][2] === 1) ||
+                (cboard[3][2] === 1 && cboard[10][2] === 1 && cboard[18][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 19) {
+            if ((cboard[18][2] === 1 && cboard[19][2] === 1 && cboard[20][2] === 1) ||
+                (cboard[16][2] === 1 && cboard[19][2] === 1 && cboard[22][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 20) {
+            if ((cboard[18][2] === 1 && cboard[19][2] === 1 && cboard[20][2] === 1) ||
+                (cboard[5][2] === 1 && cboard[13][2] === 1 && cboard[20][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 21) {
+            if ((cboard[21][2] === 1 && cboard[22][2] === 1 && cboard[23][2] === 1) ||
+                (cboard[0][2] === 1 && cboard[9][2] === 1 && cboard[21][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 22) {
+            if ((cboard[21][2] === 1 && cboard[22][2] === 1 && cboard[23][2] === 1) ||
+                (cboard[16][2] === 1 && cboard[19][2] === 1 && cboard[22][2] === 1)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 23) {
+            if ((cboard[2][2] === 1 && cboard[14][2] === 1 && cboard[23][2] === 1) ||
+                (cboard[21][2] === 1 && cboard[22][2] === 1 && cboard[23][2] === 1)) {
+                mode = 3;
+            }
+        }
+    }
+
+    function tellWchess(turn) {
+        if (turn === 0) {
+            if ((cboard[0][2] === 0 && cboard[1][2] === 0 && cboard[2][2] === 0) ||
+                (cboard[0][2] === 0 && cboard[9][2] === 0 && cboard[21][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 1) {
+            if ((cboard[1][2] === 0 && cboard[4][2] === 0 && cboard[7][2] === 0) ||
+                (cboard[0][2] === 0 && cboard[1][2] === 0 && cboard[2][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 2) {
+            if ((cboard[0][2] === 0 && cboard[1][2] === 0 && cboard[2][2] === 0) ||
+                (cboard[2][2] === 0 && cboard[14][2] === 0 && cboard[23][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 3) {
+            if ((cboard[3][2] === 0 && cboard[4][2] === 0 && cboard[5][2] === 0) ||
+                (cboard[3][2] === 0 && cboard[10][2] === 0 && cboard[18][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 4) {
+            if ((cboard[3][2] === 0 && cboard[4][2] === 0 && cboard[5][2] === 0) ||
+                (cboard[4][2] === 0 && cboard[1][2] === 0 && cboard[7][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 5) {
+            if ((cboard[3][2] === 0 && cboard[4][2] === 0 && cboard[5][2] === 0) ||
+                (cboard[5][2] === 0 && cboard[13][2] === 0 && cboard[20][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 6) {
+            if ((cboard[6][2] === 0 && cboard[7][2] === 0 && cboard[8][2] === 0) ||
+                (cboard[6][2] === 0 && cboard[11][2] === 0 && cboard[15][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 7) {
+            if ((cboard[6][2] === 0 && cboard[7][2] === 0 && cboard[8][2] === 0) ||
+                (cboard[1][2] === 0 && cboard[4][2] === 0 && cboard[7][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 8) {
+            if ((cboard[6][2] === 0 && cboard[7][2] === 0 && cboard[8][2] === 0) ||
+                (cboard[17][2] === 0 && cboard[12][2] === 0 && cboard[8][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 9) {
+            if ((cboard[9][2] === 0 && cboard[10][2] === 0 && cboard[11][2] === 0) ||
+                (cboard[0][2] === 0 && cboard[9][2] === 0 && cboard[21][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 10) {
+            if ((cboard[9][2] === 0 && cboard[10][2] === 0 && cboard[11][2] === 0) ||
+                (cboard[3][2] === 0 && cboard[10][2] === 0 && cboard[18][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 11) {
+            if ((cboard[9][2] === 0 && cboard[10][2] === 0 && cboard[11][2] === 0) ||
+                (cboard[6][2] === 0 && cboard[11][2] === 0 && cboard[15][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 12) {
+            if ((cboard[12][2] === 0 && cboard[13][2] === 0 && cboard[14][2] === 0) ||
+                (cboard[8][2] === 0 && cboard[12][2] === 0 && cboard[17][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 13) {
+            if ((cboard[5][2] === 0 && cboard[13][2] === 0 && cboard[20][2] === 0) ||
+                (cboard[12][2] === 0 && cboard[13][2] === 0 && cboard[14][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 14) {
+            if ((cboard[12][2] === 0 && cboard[13][2] === 0 && cboard[14][2] === 0) ||
+                (cboard[2][2] === 0 && cboard[14][2] === 0 && cboard[23][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 15) {
+            if ((cboard[15][2] === 0 && cboard[16][2] === 0 && cboard[17][2] === 0) ||
+                (cboard[6][2] === 0 && cboard[11][2] === 0 && cboard[15][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 16) {
+            if ((cboard[15][2] === 0 && cboard[16][2] === 0 && cboard[17][2] === 0) ||
+                (cboard[16][2] === 0 && cboard[19][2] === 0 && cboard[22][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 17) {
+            if ((cboard[15][2] === 0 && cboard[16][2] === 0 && cboard[17][2] === 0) ||
+                (cboard[8][2] === 0 && cboard[12][2] === 0 && cboard[17][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 18) {
+            if ((cboard[18][2] === 0 && cboard[19][2] === 0 && cboard[20][2] === 0) ||
+                (cboard[3][2] === 0 && cboard[10][2] === 0 && cboard[18][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 19) {
+            if ((cboard[18][2] === 0 && cboard[19][2] === 0 && cboard[20][2] === 0) ||
+                (cboard[16][2] === 0 && cboard[19][2] === 0 && cboard[22][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 20) {
+            if ((cboard[18] === 0 && cboard[19] === 0 && cboard[20] === 0) ||
+                (cboard[5] === 0 && cboard[13] === 0 && cboard[20] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 21) {
+            if ((cboard[21][2] === 0 && cboard[22][2] === 0 && cboard[23][2] === 0) ||
+                (cboard[0][2] === 0 && cboard[9][2] === 0 && cboard[21][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 22) {
+            if ((cboard[21][2] === 0 && cboard[22][2] === 0 && cboard[23][2] === 0) ||
+                (cboard[16][2] === 0 && cboard[19][2] === 0 && cboard[22][2] === 0)) {
+                mode = 3;
+            }
+        }
+        else if (turn === 23) {
+            if ((cboard[2][2] === 0 && cboard[14][2] === 0 && cboard[23][2] === 0) ||
+                (cboard[21][2] === 0 && cboard[22][2] === 0 && cboard[23][2] === 0)) {
+                mode = 3;
+            }
+        }
+    }
+
+    function gameOver() {
+
+        if (wcount <= 2 || IsWMove() === false)
+            alert("Black wins!");
+        if (bcount <= 2 || IsBMove() === false)
+            alert("White wins!");
+    }
+
+    function paintAll() {
+        var c = document.getElementById("myCanvas");
+        var cxt = c.getContext("2d");
+
+        cxt.fillStyle="#ffffff";
+        cxt.fillRect(0, 0, 300, 300); //填充的四个参数(x,y,width,height)
+
+        cxt.fillStyle="#FFDB70";
+        cxt.fillRect(0, 0, 300, 300);
+        var c = document.getElementById("myCanvas");
+        var cxt = c.getContext("2d");
+        cxt.moveTo(8,8);
+        cxt.lineTo(278,8);
+        cxt.lineTo(278,278);
+        cxt.lineTo(8,278);
+        cxt.lineTo(8,8);
+
+        cxt.moveTo(53,53);
+        cxt.lineTo(53,233);
+        cxt.lineTo(233,233);
+        cxt.lineTo(233,53);
+        cxt.lineTo(53,53);
+
+        cxt.moveTo(98,98);
+        cxt.lineTo(98,188);
+        cxt.lineTo(188,188);
+        cxt.lineTo(188,98);
+        cxt.lineTo(98,98);
+
+        cxt.moveTo(143,8);
+        cxt.lineTo(143,98);
+
+        cxt.moveTo(143,188);
+        cxt.lineTo(143,278);
+
+        cxt.moveTo(8,143);
+        cxt.lineTo(98,143);
+
+        cxt.moveTo(188,143);
+        cxt.lineTo(278,143);
+        cxt.stroke();
+
+        var c = document.getElementById("myCanvas");
+        var cx = c.getContext("2d");
+        for (var i = 0; i < cboard.length; i++) {
+            if (cboard[i][2] === 1) {
+                cx.fillStyle = "#000000";
+                cx.beginPath();
+                cx.arc(cboard[i][0] - 8,cboard[i][1] - 8, 8 , 0, Math.PI * 2, true);
+                cx.closePath();
+                cx.fill();
+            }
+            else if (cboard[i][2] === 0) {
+                cx.fillStyle = "#FFFFFF";
+                cx.beginPath();
+                cx.arc(cboard[i][0]-8, cboard[i][1]-8, 8 , 0, Math.PI * 2, true);
+                cx.closePath();
+                cx.fill();
+            }
+        }
+    }
+</script>
+</body>
+</html>

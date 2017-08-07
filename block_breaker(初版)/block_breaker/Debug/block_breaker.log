@@ -1,26 +1,17 @@
-﻿Build started 2017/7/19 21:32:28.
-     1>Project "c:\Users\ALD\documents\visual studio 2010\Projects\block_breaker\block_breaker\block_breaker.vcxproj" on node 2 (build target(s)).
+﻿Build started 2017/7/24 18:55:08.
+     1>Project "D:\summer_autumn\block_breaker(初版)\block_breaker\block_breaker.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\block_breaker.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         D:\GameDownload\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt new.cpp
-         new.cpp
-     1>c:\users\ald\documents\visual studio 2010\projects\block_breaker\block_breaker\new.cpp(111): warning C4101: 'hbrBoundary' : unreferenced local variable
-     1>c:\users\ald\documents\visual studio 2010\projects\block_breaker\block_breaker\new.cpp(88): warning C4101: 'bmp' : unreferenced local variable
-     1>c:\users\ald\documents\visual studio 2010\projects\block_breaker\block_breaker\new.cpp(364): warning C4101: 'hwnd' : unreferenced local variable
+         All outputs are up-to-date.
        Link:
-         D:\GameDownload\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\block_breaker.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.lib" /MACHINE:X86 Debug\breaker.obj
-         Debug\LinkList.obj
-         Debug\new.obj
-         LINK : c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.exe not found or not built by the last incremental link; performing full link
-         block_breaker.vcxproj -> c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.exe
-       Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"c:\users\ald\documents\visual studio 2010\Projects\block_breaker\Debug\block_breaker.exe;#1" /manifest Debug\block_breaker.exe.intermediate.manifest
+         All outputs are up-to-date.
+         block_breaker.vcxproj -> D:\summer_autumn\block_breaker(初版)\Debug\block_breaker.exe
        FinalizeBuildStatus:
          Deleting file "Debug\block_breaker.unsuccessfulbuild".
          Touching "Debug\block_breaker.lastbuildstate".
-     1>Done Building Project "c:\Users\ALD\documents\visual studio 2010\Projects\block_breaker\block_breaker\block_breaker.vcxproj" (build target(s)).
+     1>Done Building Project "D:\summer_autumn\block_breaker(初版)\block_breaker\block_breaker.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.61
+Time Elapsed 00:00:00.03
