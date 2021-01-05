@@ -8,9 +8,9 @@ PLIST list_ball = ListCreate(NULL);
 PLIST list_tool = ListCreate(NULL);
 Breaker breaker;
 
-DWORD dwSorce = 0;//×ÜµÃ·Ö
+DWORD dwSorce = 0;//æ€»å¾—åˆ†
 double timer = 270;
-//ObjectÀàÖĞº¯ÊıµÄ¶¨Òå
+//Objectç±»ä¸­å‡½æ•°çš„å®šä¹‰
 int Object::get_x()
 {
 	return x;
@@ -41,7 +41,7 @@ int Object::get_length()
 {
 	return length;
 }
-//¶¨ÒåBlockÀàµÄº¯Êı
+//å®šä¹‰Blockç±»çš„å‡½æ•°
 Block::Block(int a,int b,int c,int d,BLOCK_TYPE e)
 	:Object(a,b,c,d),type(e){}
 int Block::get_sorce()
@@ -66,7 +66,7 @@ BLOCK_TYPE Block::get_block_type()
 	return type;
 }
 
-//¶¨ÒåBallÖĞµÄº¯Êı
+//å®šä¹‰Ballä¸­çš„å‡½æ•°
 Ball::Ball(int a,int b,int c,int d,BALL_TYPE e,int f,int g)
 	:Object(a,b,c,d),type(e),galaxy_x(f),galaxy_y(g){}
 void Ball::magic_gen(int rand_1)
@@ -97,262 +97,21 @@ void Ball::magic_gen(int rand_1)
 		breaker.Re_incarnation();
 	}
 	else{
-		//¿ÉÒÔÓëÔ­ÊôĞÔÏàÍ¬
+		//å¯ä»¥ä¸åŸå±æ€§ç›¸åŒ
 		magic_gen(rand()%70 + 1);
 	}
 }
 
 void Ball::Moving()
 {
-	IsHited();//ÅĞ¶ÏÇòÊÇ·ñ±»×²£¬ÈôÅö×²Ôò¸Ä±ä·½Ïò
-	x += galaxy_x;//ºá×ø±ê±ä»»ºóµÄÖµ
-	y += galaxy_y;//×İ×ø±ê±ä»»ºóµÄÖµ
+	IsHited();//åˆ¤æ–­çƒæ˜¯å¦è¢«æ’ï¼Œè‹¥ç¢°æ’åˆ™æ”¹å˜æ–¹å‘
+	x += galaxy_x;//æ¨ªåæ ‡å˜æ¢åçš„å€¼
+	y += galaxy_y;//çºµåæ ‡å˜æ¢åçš„å€¼
 }
-//void Ball::IsHited()
-//{
-//	 int n = (y-BLOCK_HEIGHT)/BLOCK_HEIGHT*MAX_X/BLOCK_LENGTH+x/BLOCK_LENGTH;
-//	 int a = n + 16;
-//	 int b = n + 14;
-//	//µÚÒ»ÖÖÇé¿ö£¬Åöµ½×óÓÒÁ½²àµÄÇ½±Ú
-//	if ((x <= 0 && galaxy_x < 0)|| (x >= MAX_X-BALL_LENGTH && galaxy_x > 0))
-//		galaxy_x = -galaxy_x;
-//
-//	//µÚ¶şÖÖÇé¿ö£¬Åöµ½ÉÏ²àÇ½±Ú¡£ÈôÎªÏÂ²à£¬yÔ½½çÖ±½ÓÅĞ¶ÏËÀÍö
-//	if (y <= 0)
-//		galaxy_y = -galaxy_y;
-//
-//	//µÚÈıÖÖÇé¿ö£¬ÇòµÄÕıÉÏ·½ÓĞ×©
-//	if (get_block_at(n) && get_block_at(n)->get_block_type() != BLOCK_TYPE_NONE && get_block_at(n)->get_y() + BLOCK_HEIGHT <= y
-//		&& get_block_at(n)->get_x()+BLOCK_LENGTH > x && get_block_at(n)->get_x()-BALL_LENGTH/2 && y <= (y/BLOCK_HEIGHT)*BLOCK_HEIGHT)
-//	{
-//		//ÇòÊÇ»ğÇò,¿ÉÒÔ»÷ËéÒ»ÇĞ×©
-//		if (type == BALL_TYPE_FLAME )
-//		{
-//			srand( (unsigned)time( NULL ) );
-//			if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_MAGIC)
-//				this->magic_gen(rand()%100+1);
-//			else if(((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_TOOL)
-//				CreateTool(((Block*)(ListGetAt(list_block, n)))->get_x(),((Block*)(ListGetAt(list_block, n)))->get_y(),
-//					TOOL_LENGTH,TOOL_HEIGHT);
-//			
-//			if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_DIR){
-//				galaxy_x = -galaxy_x;
-//				galaxy_y = -galaxy_y;
-//			}
-//			else
-//				galaxy_y  = -galaxy_y;
-//
-//			((Block*)(ListGetAt(list_block, n)))->set_type(BLOCK_TYPE_NONE);
-//			dwSorce += ((Block*)(ListGetAt(list_block, n)))->get_sorce();
-//		}
-//		//ÇòÊÇµçÇò
-//		else if (type == BALL_TYPE_ELEC) { 
-//			//×©ÊÇÌú×©
-//			if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_IRON)
-//			{
-//				galaxy_y = -galaxy_y;
-//			}
-//			//×©²»ÊÇÌú×©
-//			else
-//			{
-//				srand( (unsigned)time( NULL ) );
-//				if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_MAGIC)
-//					this->magic_gen(rand()%100+1);
-//				else if(((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_TOOL)
-//					CreateTool(((Block*)(ListGetAt(list_block, n)))->get_x(),((Block*)(ListGetAt(list_block, n)))->get_y(),
-//						TOOL_LENGTH,TOOL_HEIGHT);
-//
-//				((Block*)(ListGetAt(list_block, n)))->set_type(BLOCK_TYPE_NONE);
-//				dwSorce += ((Block*)ListGetAt(list_block, n))->get_sorce();
-//			}
-//		}
-//		//Çò²»ÊÇ»ğ£¬µçÇò
-//		else{
-//			//×©ÊÇÌú×©
-//			if (((Block*)(ListGetAt(list_block,n)))->get_block_type() == BLOCK_TYPE_IRON)
-//			{
-//				galaxy_y = -galaxy_y;
-//			}
-//			//×©²»ÊÇÌú×©
-//			else
-//			{
-//				srand( (unsigned)time( NULL ) );
-//				if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_MAGIC)
-//					this->magic_gen(rand()%100+1);
-//				else if(((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_TOOL)
-//					CreateTool(((Block*)(ListGetAt(list_block, n)))->get_x(),((Block*)(ListGetAt(list_block, n)))->get_y(),
-//						TOOL_LENGTH,TOOL_HEIGHT);
-//
-//				if (((Block*)(ListGetAt(list_block, n)))->get_block_type() == BLOCK_TYPE_DIR){
-//					galaxy_x = -galaxy_x;
-//					galaxy_y = -galaxy_y;
-//				}
-//				else
-//					galaxy_y  = -galaxy_y;
-//
-//				((Block*)(ListGetAt(list_block, n)))->set_type(BLOCK_TYPE_NONE);
-//				dwSorce += ((Block*)ListGetAt(list_block, n))->get_sorce();
-//			}
-//		}
-//	}
-//
-//	//µÚËÄÖÖÇé¿ö£¬ÅĞ¶ÏÆäÓÒ¶ËÊÇ·ñÓĞ×©
-//	if ( get_block_at(a) && a%15 != 0 && get_block_at(a)->get_block_type() != BLOCK_TYPE_NONE && a <= BLOCK_NUM && x+BALL_LENGTH >= get_block_at(a)->get_x()
-//		&& y < get_block_at(a)->get_y() + 15 && y > get_block_at(a)->get_y()- 5)
-//	{
-//		if (type == BALL_TYPE_FLAME )
-//		{
-//			srand( (unsigned)time( NULL ) );
-//			if (get_block_at(a)->get_block_type() == BLOCK_TYPE_MAGIC)
-//				this->magic_gen(rand()%100+1);
-//			else if(get_block_at(a)->get_block_type() == BLOCK_TYPE_TOOL)
-//				CreateTool(get_block_at(a)->get_x(),get_block_at(a)->get_y(),
-//					TOOL_LENGTH,TOOL_HEIGHT);
-//
-//			if (get_block_at(a)->get_block_type() == BLOCK_TYPE_DIR){
-//				galaxy_x = -galaxy_x;
-//				galaxy_y = -galaxy_y;
-//			}
-//			else
-//				galaxy_y  = -galaxy_y;
-//
-//			get_block_at(a)->set_type(BLOCK_TYPE_NONE);
-//			dwSorce += get_block_at(a)->get_sorce();
-//			}
-//			//ÇòÊÇµçÇò
-//		else if (type == BALL_TYPE_ELEC) { 
-//			//×©ÊÇÌú×©
-//			if (get_block_at(a)->get_block_type() == BLOCK_TYPE_IRON)
-//			{
-//				galaxy_y = -galaxy_y;
-//			}
-//			//×©²»ÊÇÌú×©
-//			else
-//			{
-//				srand( (unsigned)time( NULL ) );
-//				if (get_block_at(a)->get_block_type() == BLOCK_TYPE_MAGIC)
-//					this->magic_gen(rand()%100+1);
-//				else if(get_block_at(a)->get_block_type() == BLOCK_TYPE_TOOL)
-//					CreateTool(get_block_at(a)->get_x(),get_block_at(a)->get_y(),
-//						TOOL_LENGTH,TOOL_HEIGHT);
-//
-//				get_block_at(a)->set_type(BLOCK_TYPE_NONE);
-//				dwSorce += get_block_at(a)->get_sorce();
-//			}
-//		}
-//		//Çò²»ÊÇ»ğ£¬µçÇò
-//		else{
-//			//×©ÊÇÌú×©
-//			if (get_block_at(a)->get_block_type() == BLOCK_TYPE_IRON)
-//			{
-//				galaxy_y = -galaxy_y;
-//			}
-//			//×©²»ÊÇÌú×©
-//			else
-//			{
-//				srand( (unsigned)time( NULL ) );
-//				if (get_block_at(a)->get_block_type() == BLOCK_TYPE_MAGIC)
-//					this->magic_gen(rand()%100+1);
-//				else if(get_block_at(a)->get_block_type() == BLOCK_TYPE_TOOL)
-//					CreateTool(get_block_at(a)->get_x(),get_block_at(a)->get_y(),
-//						TOOL_LENGTH,TOOL_HEIGHT);
-//
-//					if (get_block_at(a)->get_block_type() == BLOCK_TYPE_DIR){
-//						galaxy_x = -galaxy_x;
-//						galaxy_y = -galaxy_y;
-//					}
-//					else
-//						galaxy_y  = -galaxy_y;
-//
-//					get_block_at(a)->set_type(BLOCK_TYPE_NONE);
-//					dwSorce += get_block_at(a)->get_sorce();
-//				}
-//			}
-//		}
-//		//µÚÎåÖÖÅĞ¶Ï×ó¶Ë
-//		if ( get_block_at(b) && (b+1)%15 != 0 && get_block_at(b)->get_block_type() != BLOCK_TYPE_NONE && b <= BLOCK_NUM && x-BALL_LENGTH <= get_block_at(b)->get_x()
-//		&& y < get_block_at(b)->get_y() + 15 && y > get_block_at(b)->get_y()- 5)
-//		{
-//			if (type == BALL_TYPE_FLAME )
-//			{
-//				srand( (unsigned)time( NULL ) );
-//				if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
-//					this->magic_gen(rand()%100+1);
-//				else if(get_block_at(b)->get_block_type() == BLOCK_TYPE_TOOL)
-//					CreateTool(get_block_at(b)->get_x(),get_block_at(b)->get_y(),
-//						TOOL_LENGTH,TOOL_HEIGHT);
-//
-//				if (get_block_at(b)->get_block_type() == BLOCK_TYPE_DIR){
-//					galaxy_x = -galaxy_x;
-//					galaxy_y = -galaxy_y;
-//				}
-//				else
-//					galaxy_y  = -galaxy_y;
-//
-//				get_block_at(b)->set_type(BLOCK_TYPE_NONE);
-//				dwSorce += get_block_at(b)->get_sorce();
-//			}
-//			//ÇòÊÇµçÇò
-//			else if (type == BALL_TYPE_ELEC) { 
-//				//×©ÊÇÌú×©
-//				if (get_block_at(b)->get_block_type() == BLOCK_TYPE_IRON)
-//				{
-//					galaxy_y = -galaxy_y;
-//				}
-//				//×©²»ÊÇÌú×©
-//				else
-//				{
-//					srand( (unsigned)time( NULL ) );
-//					if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
-//						this->magic_gen(rand()%100+1);
-//					else if(get_block_at(b)->get_block_type() == BLOCK_TYPE_TOOL)
-//						CreateTool(get_block_at(b)->get_x(),get_block_at(b)->get_y(),
-//							TOOL_LENGTH,TOOL_HEIGHT);
-//
-//					get_block_at(b)->set_type(BLOCK_TYPE_NONE);
-//					dwSorce += get_block_at(b)->get_sorce();
-//				}
-//			}
-//			//Çò²»ÊÇ»ğ£¬µçÇò
-//			else {
-//				//×©ÊÇÌú×©
-//				if (get_block_at(b)->get_block_type() == BLOCK_TYPE_IRON)
-//				{
-//					galaxy_y = -galaxy_y;
-//				}
-//				//×©²»ÊÇÌú×©
-//				else
-//				{
-//					srand( (unsigned)time( NULL ) );
-//					if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
-//						this->magic_gen(rand()%100+1);
-//					else if(get_block_at(b)->get_block_type() == BLOCK_TYPE_TOOL)
-//						CreateTool(get_block_at(b)->get_x(),get_block_at(b)->get_y(),
-//							TOOL_LENGTH,TOOL_HEIGHT);
-//
-//					if (get_block_at(b)->get_block_type() == BLOCK_TYPE_DIR){
-//						galaxy_x = -galaxy_x;
-//						galaxy_y = -galaxy_y;
-//					}
-//					else
-//						galaxy_y  = -galaxy_y;
-//
-//					get_block_at(b)->set_type(BLOCK_TYPE_NONE);
-//					dwSorce += get_block_at(b)->get_sorce();
-//				}	
-//			}
-//		}
-//	//µÚÁùÖÖÇé¿ö£¬Åöµ½°å
-//		if ( galaxy_y > 0 && y >= MAX_Y-BREAKER_HEIGHT-BALL_LENGTH && y < MAX_Y-BREAKER_HEIGHT/2 &&
-//			x >= breaker.get_x()-BALL_LENGTH/2 && x  < breaker.get_x()+BREAKER_LENGTH-BALL_LENGTH/2)
-//		{
-//			galaxy_y = -galaxy_y;
-//		}
-//}
 
 void Ball::dir_change(int b,DIRECTION dir)
 {
-	//ÇòÊÇ»ğÇò
+	//çƒæ˜¯ç«çƒ
 	if (type == BALL_TYPE_FLAME )
 	{
 		if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
@@ -375,9 +134,9 @@ void Ball::dir_change(int b,DIRECTION dir)
 		get_block_at(b)->set_type(BLOCK_TYPE_NONE);
 		dwSorce += get_block_at(b)->get_sorce();
 	}
-	//ÇòÊÇµçÇò
+	//çƒæ˜¯ç”µçƒ
 	else if (type == BALL_TYPE_ELEC) { 
-		//×©ÊÇÌú×©
+		//ç –æ˜¯é“ç –
 		if (get_block_at(b)->get_block_type() == BLOCK_TYPE_IRON)
 		{
 			if ( (dir == ANGLE1 && galaxy_x > 0 && galaxy_y > 0) || (dir == ANGLE2 && galaxy_x < 0 && galaxy_y > 0) ||
@@ -391,7 +150,7 @@ void Ball::dir_change(int b,DIRECTION dir)
 			else if ((dir == TOP && galaxy_y > 0) || (dir == BOTTOM && galaxy_y < 0))
 				galaxy_y = - galaxy_y;
 		}
-		//×©²»ÊÇÌú×©
+		//ç –ä¸æ˜¯é“ç –
 		else
 		{
 			if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
@@ -404,9 +163,9 @@ void Ball::dir_change(int b,DIRECTION dir)
 			dwSorce += get_block_at(b)->get_sorce();
 		}
 	}
-	//Çò²»ÊÇ»ğ£¬µçÇò
+	//çƒä¸æ˜¯ç«ï¼Œç”µçƒ
 	else {
-		//×©ÊÇÌú×©
+		//ç –æ˜¯é“ç –
 		if (get_block_at(b)->get_block_type() == BLOCK_TYPE_IRON)
 		{
 			if ( (dir == ANGLE1 && galaxy_x > 0 && galaxy_y > 0) || (dir == ANGLE2 && galaxy_x < 0 && galaxy_y > 0) ||
@@ -421,7 +180,7 @@ void Ball::dir_change(int b,DIRECTION dir)
 			else if ((dir == TOP && galaxy_y > 0) || (dir == BOTTOM && galaxy_y < 0))
 				galaxy_y = - galaxy_y;
 		}
-		//×©²»ÊÇÌú×©
+		//ç –ä¸æ˜¯é“ç –
 		else
 		{
 			if (get_block_at(b)->get_block_type() == BLOCK_TYPE_MAGIC)
@@ -447,42 +206,42 @@ void Ball::dir_change(int b,DIRECTION dir)
 	}
 }
 
-//Åö×²¼ì²â
+//ç¢°æ’æ£€æµ‹
 void Ball::IsHited()
 	{
-	//µÚÒ»ÖÖÇé¿ö£¬Åöµ½×óÓÒÁ½²àµÄÇ½±Ú
+	//ç¬¬ä¸€ç§æƒ…å†µï¼Œç¢°åˆ°å·¦å³ä¸¤ä¾§çš„å¢™å£
 	if ((x <= 0 && galaxy_x < 0)|| (x >= MAX_X-BALL_LENGTH && galaxy_x > 0))
 		galaxy_x = -galaxy_x;
 
-	//µÚ¶şÖÖÇé¿ö£¬Åöµ½ÉÏ²àÇ½±Ú¡£ÈôÎªÏÂ²à£¬yÔ½½çÖ±½ÓÅĞ¶ÏËÀÍö
+	//ç¬¬äºŒç§æƒ…å†µï¼Œç¢°åˆ°ä¸Šä¾§å¢™å£ã€‚è‹¥ä¸ºä¸‹ä¾§ï¼Œyè¶Šç•Œç›´æ¥åˆ¤æ–­æ­»äº¡
 	if (y <= 0 /*|| y > MAX_Y-10*/)
 		galaxy_y = -galaxy_y;
 
-	//±éÀúÃ¿Ò»¿é×©ÅĞ¶ÏÊÇ·ñÅö×²
+	//éå†æ¯ä¸€å—ç –åˆ¤æ–­æ˜¯å¦ç¢°æ’
 	for (int i = 0; i < BLOCK_NUM;i ++)
 	{
 		if (get_block_at(i)->get_block_type() != BLOCK_TYPE_NONE && x >= get_block_at(i)->get_x() - BALL_LENGTH && x <= get_block_at(i)->get_x() + BLOCK_LENGTH
 			&& y <= get_block_at(i)->get_y() + BLOCK_HEIGHT && y >= get_block_at(i)->get_y() - BALL_LENGTH)
 		{
-			//ÅĞ¶Ï×óÉÏ·½
+			//åˆ¤æ–­å·¦ä¸Šæ–¹
 			if (x + BALL_LENGTH/2 < get_block_at(i)->get_x() && y + BALL_LENGTH/2 < get_block_at(i)->get_y())
 			{
 				if (sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2, get_block_at(i)->get_x(),get_block_at(i)->get_y()) > BALL_LENGTH*BALL_LENGTH/4 )
 					continue;
 			}
-			//ÅĞ¶ÏÓÒÉÏ·½
+			//åˆ¤æ–­å³ä¸Šæ–¹
 			else if (x+BALL_LENGTH/2 > get_block_at(i)->get_x() + BLOCK_LENGTH && y + BALL_LENGTH/2 <  get_block_at(i)->get_y())
 			{
 				if (sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x() + BLOCK_LENGTH,get_block_at(i)->get_y()) > BALL_LENGTH*BALL_LENGTH/4)
 					continue;
 			}
-			//ÅĞ¶Ï×óÏÂ·½
+			//åˆ¤æ–­å·¦ä¸‹æ–¹
 			else if (x + BALL_LENGTH/2 < get_block_at(i)->get_x() && y + BALL_LENGTH/2 > get_block_at(i)->get_y() + BLOCK_HEIGHT)
 			{
 				if(sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x(),get_block_at(i)->get_y()+BLOCK_HEIGHT) > BALL_LENGTH*BALL_LENGTH/4)
 					continue;
 			}
-			//ÅĞ¶ÏÓÒÏÂ·½
+			//åˆ¤æ–­å³ä¸‹æ–¹
 			else if (x + BALL_LENGTH/2 > get_block_at(i)->get_x() + BLOCK_LENGTH && y + BALL_LENGTH/2  > get_block_at(i)->get_y() + BLOCK_HEIGHT)
 			{
 				if (sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x()+BLOCK_LENGTH,get_block_at(i)->get_y()+BLOCK_HEIGHT) > BALL_LENGTH*BALL_LENGTH/4)
@@ -492,7 +251,7 @@ void Ball::IsHited()
 				dir_change(i,get_dir(i));
 		}
 	}
-	//µÚËÄÖÖÇé¿ö£¬Åöµ½°å
+	//ç¬¬å››ç§æƒ…å†µï¼Œç¢°åˆ°æ¿
 	if ( galaxy_y > 0 && y >= MAX_Y-BREAKER_HEIGHT-BALL_LENGTH && y <= MAX_Y-BREAKER_HEIGHT/2 &&
 		x >= breaker.get_x()-breaker.get_length()/2 && x  <= breaker.get_x()+breaker.get_length()-BALL_LENGTH/2)
 	{
@@ -501,16 +260,16 @@ void Ball::IsHited()
 }
 DIRECTION Ball::get_dir(int i)
 {
-	//×óÉÏ½Ç
+	//å·¦ä¸Šè§’
 	if (x + BALL_LENGTH/2 <= get_block_at(i)->get_x() && y + BALL_LENGTH/2 <= get_block_at(i)->get_y()&&sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2, get_block_at(i)->get_x(),get_block_at(i)->get_y()) <= BALL_LENGTH*BALL_LENGTH/4)
 		return ANGLE1;
-	//ÓÒÉÏ½Ç
+	//å³ä¸Šè§’
 	else if ((x+BALL_LENGTH/2 >= get_block_at(i)->get_x() + BLOCK_LENGTH) && (y + BALL_LENGTH/2 <=  get_block_at(i)->get_y()) && (sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x() + BLOCK_LENGTH,get_block_at(i)->get_y()) <= BALL_LENGTH*BALL_LENGTH/4))
 		return ANGLE2;
-	//×óÏÂ½Ç
+	//å·¦ä¸‹è§’
 	else if	((x + BALL_LENGTH/2 <= get_block_at(i)->get_x()) && (y + BALL_LENGTH/2 >= get_block_at(i)->get_y() + BLOCK_HEIGHT) &&(sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x(),get_block_at(i)->get_y()+BLOCK_HEIGHT) <= BALL_LENGTH*BALL_LENGTH/4))
 		return ANGLE3;
-	//ÓÒÏÂ½Ç
+	//å³ä¸‹è§’
 	else if ((x + BALL_LENGTH/2 >= get_block_at(i)->get_x() + BLOCK_LENGTH) && (y + BALL_LENGTH/2  >= get_block_at(i)->get_y() + BLOCK_HEIGHT) && (sqrtlength(x + BALL_LENGTH/2,y + BALL_LENGTH/2,get_block_at(i)->get_x()+BLOCK_LENGTH,get_block_at(i)->get_y()+BLOCK_HEIGHT)<= BALL_LENGTH*BALL_LENGTH/4))
 		return ANGLE4;
 	else if (x + BALL_LENGTH/2 >= get_block_at(i)->get_x() && x + BALL_LENGTH/2 <= get_block_at(i)->get_x()+BLOCK_LENGTH 
@@ -543,7 +302,7 @@ int Ball::getga_y()
 	return galaxy_y;
 }
 
-//Í¨¹ı×İ×ø±êÅĞ¶ÏÇòÊÇ·ñËÀÍö
+//é€šè¿‡çºµåæ ‡åˆ¤æ–­çƒæ˜¯å¦æ­»äº¡
 bool Ball::IsDead()
 {
 	if (get_y() >= MAX_Y)
@@ -560,7 +319,7 @@ BALL_TYPE Ball::get_ball_type()
 	return type;
 }
 
-//¶¨Òåbreakerº¯Êı
+//å®šä¹‰breakerå‡½æ•°
 Breaker::Breaker(int a,int b,int c,int d,int e,int f,int g)
 	:Object(a,b,c,d),LigNum(e),intensify(f),speed(g){}
 void Breaker::setspeed(int a)
@@ -604,7 +363,7 @@ void Breaker::Re_incarnation()
 	setPower();
 	setspeed(0);
 }
-//¶¨Òåtoolº¯Êı
+//å®šä¹‰toolå‡½æ•°
 Tool::Tool(int a,int b,int c,int d,TOOL_TYPE e,int f)
 	:Object(a,b,c,d),type(e),dropSpeed(f){}
 TOOL_TYPE Tool::get_tool_type()
@@ -635,10 +394,10 @@ bool Tool::IsDisappear()
 		return false;
 }
 
-//È«¾Öº¯Êı
+//å…¨å±€å‡½æ•°
 BLOCK_TYPE get_block_type()
 {
-	//³õÊ¼»¯Ëæ»úÊı
+	//åˆå§‹åŒ–éšæœºæ•°
 	int rand_0 = rand()%100+1;
 	if (rand_0 >= 1 && rand_0 <= 8)
 		return BLOCK_TYPE_MAGIC;
@@ -697,7 +456,7 @@ void tool_destroy()
 }
 GAMEEND GameOver(PLIST list_ball)
 {
-	//Í¨¹ıÅĞ¶ÏIsDead£¬ÅĞ¶ÏĞ¡ÇòÊÇ·ñÈ«Ãğ
+	//é€šè¿‡åˆ¤æ–­IsDeadï¼Œåˆ¤æ–­å°çƒæ˜¯å¦å…¨ç­
 	int i,flag1 = 0,flag2 = 0;
 	for (i = ListSize(list_ball)-1; i >= 0;i--)
 	{
@@ -716,7 +475,7 @@ GAMEEND GameOver(PLIST list_ball)
 		breaker.setPower(breaker.getPowerNum(),0);
 	else
 		flag1 = 0;
-	//Í¨¹ıÅĞ¶Ï¡¢Á´±íÊÇ·ñÎª¿ÕÅĞ¶ÏÓÎÏ·ÊÇ·ñ½áÊø
+	//é€šè¿‡åˆ¤æ–­ã€é“¾è¡¨æ˜¯å¦ä¸ºç©ºåˆ¤æ–­æ¸¸æˆæ˜¯å¦ç»“æŸ
 	if (ListSize(list_ball) <= 0)
 		return YOULOST;
 	else {
